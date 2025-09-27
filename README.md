@@ -122,4 +122,4 @@ This PowerShell script extracts legacy DirectX CABs (e.g., from the **June 2010*
 ## Requirements
 - PowerShell (Windows PowerShell 5.x or PowerShell 7+).
 - Administrator privileges (the script auto-elevates).
-- Access to the **June 2010** DirectX redistributable **CABs** (extracted from the official Microsoft redist EXE).
+- Access to the **June 2010** DirectX redistributable **CABs** (extracted from the **[official Microsoft redist EXE](https://www.microsoft.com/en-us/download/details.aspx?id=8109)**).
