@@ -9,6 +9,50 @@ This PowerShell script extracts legacy DirectX CABs (e.g., from the **June 2010*
 - Copies DLLs into the correct system folders with **version/timestamp-aware** replacement and **backups**.
 - Attempts `regsvr32` on touched DLLs (failures are expected for non-COM DLLs).
 - **Readable logging**, progress bars, and a **final pause** so you can review output.
+## Why I built this (context & symptoms)
+- Software that relies on legacy DirectX (e.g., **RivaTuner Statistics Server**) either wouldn't launch or wouldn't enable legacy DirectX-dependent features like the On-Screen Display (OSD) in RivaTuner Statistics Server's case.
+- RTSS showed:
+  - `Required DirectX runtimes are not installed! On-Screen Display may not function properly!`
+- Running the legacy DirectX installers (web installer or `DXSETUP.exe` from `directx_Jun2010_redist.exe`) consistently failed with:
+  - `An internal system error occurred. Please refer to DXError.log and DirectX.log in your Windows folder to determine problem.`
+- No `DXError.log` / `DirectX.log` were generated and **Event Viewer** contained no related entries.
+### Test hygiene (to avoid cross-contamination)
+- After any failed attempt, Windows was **reinstalled** to ensure a clean baseline for the next test.
+- When switching ISOs, hashes were **verified** and **Rufus → "Enable runtime UEFI media validation"** was kept on to rule out corrupt media.
+- **All ISOs were untouched** (no modifications).
+## What I tried (all failed on my system)
+- **Fully update** Windows via Windows Update.
+- Verify policy that controls optional component installs/repairs:  
+  - `Computer Configuration → Administrative Templates → System → Specify settings for optional component installation and component repair.`
+- Add/verify OS media features:
+  - **Graphics Tools** (Optional Features/Features on Demand)
+  - **Windows Media Player** (Optional Features/Features on Demand)
+  - **Media Feature Pack**
+    - On a clean install, used:
+      - `DISM /Online /Add-Capability /CapabilityName:Media.WindowsMediaPlayer~~~~0.0.12.0` → **reboot**
+      - `DISM /Online /Add-Capability /CapabilityName:Media.MediaFeaturePack~~~~0.0.1.0` → **reboot**
+- Install runtime prerequisites:
+  - **ALL** .NET Framework versions (at minimum **.NET 3.5 SP1**)
+  - **ALL** Visual C++ Redistributable packages
+- System integrity/health checks (despite the fact I was using a brand new NVMe SSD):
+  - `DISM /Online /Cleanup-Image /RestoreHealth`
+  - `sfc /scannow`
+  - `chkdsk /f /r /x`
+- Standard DirectX installers:
+  - **DirectX End-User Runtime Web Installer**
+  - **DirectX End-User Runtimes (June 2010)** via `DXSETUP.exe`
+  - **Compatibility mode** for both `dxwebsetup.exe` and `DXSETUP.exe`, testing **every** available Windows version
+- Driver sanity:
+  - Clean reinstall of **NVIDIA** GPU drivers
+  - Clean reinstall of **Intel Graphics** drivers (iGPU)
+- Last-resort OS actions:
+  - **Fresh Windows reinstall**, verified ISO hashes, and used Rufus' **"Enable runtime UEFI media validation"**
+- Hail-Mary steps:
+  - Anecdotal **Registry tweaks** (e.g., `HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\DirectX`)
+- Firmware:
+  - **Reflashed BIOS** and loaded **stock/default settings**
+## What finally worked (resolution summary)
+Following the approach documented in this README—**extracting the June 2010 CABs and running this script**—installed the necessary legacy DirectX DLLs into `System32` and `SysWOW64`, resolving the RTSS OSD issue on **Windows 11 IoT Enterprise LTSC 2024**. (For exact commands and options, see **Quick start** and **Usage** in this README.)
 ## Quick start
 - Extract the Microsoft **[DirectX End-User Runtimes (June 2010)](https://www.microsoft.com/en-us/download/details.aspx?id=8109)** EXE to a folder (it produces many `*.cab` files).
 - Run only the final June 2010 component CABs:
