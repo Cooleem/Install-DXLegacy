@@ -56,12 +56,12 @@ Following the approach documented in this README—**extracting the June 2010 CA
 ## Quick start
 - Extract the Microsoft **[DirectX End-User Runtimes (June 2010)](https://www.microsoft.com/en-us/download/details.aspx?id=8109)** EXE to a folder (it produces many `*.cab` files).
 - Run only the final June 2010 component CABs:
-  - `powershell -ExecutionPolicy Bypass -File .\Install-DXLegacy_v4.ps1 -Source "C:\DXRedist" -OnlyJune2010`
+  - `powershell -ExecutionPolicy Bypass -File .\Install-DXLegacy.ps1 -Source "C:\DXRedist" -OnlyJune2010`
 - `-Source` must point at the folder that contains the **extracted** CAB files (not the EXE).
 - The script **auto-elevates**; if you're not already Admin, it relaunches itself elevated.
 - When done, the window **stays open** so you can read the summary; press **Enter** to close.
 ## Usage
-- `powershell -ExecutionPolicy Bypass -File .\Install-DXLegacy_v4.ps1 [-Source "<path>"] [-BackupDir "<path>"] [-OnlyJune2010] [-WindowsDrive "<drive>"] [-SkipRestorePoint]`
+- `powershell -ExecutionPolicy Bypass -File .\Install-DXLegacy.ps1 [-Source "<path>"] [-BackupDir "<path>"] [-OnlyJune2010] [-WindowsDrive "<drive>"] [-SkipRestorePoint]`
 ## Parameters
 - `-Source <string>`
   - **What:** Path to the directory that contains the extracted DirectX CAB files.
@@ -126,21 +126,22 @@ Following the approach documented in this README—**extracting the June 2010 CA
 - Don't place DLLs in subfolders inside `System32`/`SysWOW64` — they need to live **directly** in those folders to be found.
 - Some well-known files provided by the June 2010 redist include: `d3dx9_43.dll`, `d3dx10_43.dll`, `d3dx11_43.dll`, `D3DCompiler_43.dll`, `XAudio2_7.dll`, `XInput1_3.dll` (in both 32-bit and 64-bit variants).
 - `dxdiag` typically won't show these legacy components explicitly; validation is usually via your app/tool (e.g., RTSS OSD working again).
+- Added `BEGINNER NOTE` and other additional comments throughout the PowerShell script for anyone unfamiliar with PowerShell scripting.
 ## Examples
 - Process all CABs below a source folder
-  - `powershell -ExecutionPolicy Bypass -File .\Install-DXLegacy_v4.ps1 -Source "D:\Packages\DX2010"`
+  - `powershell -ExecutionPolicy Bypass -File .\Install-DXLegacy.ps1 -Source "D:\Packages\DX2010"`
 
 - Only the June 2010 component CABs
-  - `powershell -ExecutionPolicy Bypass -File .\Install-DXLegacy_v4.ps1 -Source "C:\DXRedist" -OnlyJune2010`
+  - `powershell -ExecutionPolicy Bypass -File .\Install-DXLegacy.ps1 -Source "C:\DXRedist" -OnlyJune2010`
 
 - Custom backup/log location
-  - `powershell -ExecutionPolicy Bypass -File .\Install-DXLegacy_v4.ps1 -Source "C:\DXRedist" -BackupDir "E:\Temp\DXLegacyBackups"`
+  - `powershell -ExecutionPolicy Bypass -File .\Install-DXLegacy.ps1 -Source "C:\DXRedist" -BackupDir "E:\Temp\DXLegacyBackups"`
 
 - Windows installed on a non-C: drive
-  - `powershell -ExecutionPolicy Bypass -File .\Install-DXLegacy_v4.ps1 -Source "F:\DX2010" -WindowsDrive "D:"`
+  - `powershell -ExecutionPolicy Bypass -File .\Install-DXLegacy.ps1 -Source "F:\DX2010" -WindowsDrive "D:"`
 
 - Skip restore point (advanced users)
-  - `powershell -ExecutionPolicy Bypass -File .\Install-DXLegacy_v4.ps1 -Source "C:\DXRedist" -OnlyJune2010 -SkipRestorePoint`
+  - `powershell -ExecutionPolicy Bypass -File .\Install-DXLegacy.ps1 -Source "C:\DXRedist" -OnlyJune2010 -SkipRestorePoint`
 ## Logging & progress
 - Log file: `Install-DXLegacy_<timestamp>.log` inside `-BackupDir` (or the Desktop fallback).
 - Progress bars: show CAB extraction and DLL install/registration status.
